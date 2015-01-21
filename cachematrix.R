@@ -17,7 +17,7 @@ makeCacheMatrix <- function(x = matrix()) {
         inv <<- NULL
     }
     get <- function() x
-    setinv <- function(mean) inv <<- solve
+    setinv <- function(inverse) inv <<- inverse
     getinv <- function() inv
     list(set = set, get = get,
          setinv = setinv,
@@ -45,3 +45,60 @@ cacheSolve <- function(x, ...) {
     x$setinv(inv)
     inv
 }
+
+## ===============
+## Sample Run
+## ===============
+## Two matricies will be used to test: matA and matB
+## matA <- matrix(c(1,0,5,2,1,6,3,4,0), 3, 3)
+## Expected Inverse of matA: [(-24,20,-5),(18,-15,4),(5,-4,1)]
+##
+## matB <- matrix(c(3,2,0,0,0,1,2,-2,1), 3, 3)
+## Expected Inverse of matB: [(0.2, -0.2, 0.2),(0.2,0.3,-0.3),(0,1,0)]
+##
+## 1. Calc inverse of A.  Expected: Results from solve function
+## ------------------------------------------------------------
+## > matAinv <- makeCacheMatrix(matA)
+## > cacheSolve(matAinv)
+## [,1] [,2] [,3]
+## [1,]  -24   18    5
+## [2,]   20  -15   -4
+## [3,]   -5    4    1
+##
+## 2. Calc inverse of A.  Expected: Results from cached function
+## -------------------------------------------------------------
+## > cacheSolve(matAinv)
+## getting cached data
+## [,1] [,2] [,3]
+## [1,]  -24   18    5
+## [2,]   20  -15   -4
+## [3,]   -5    4    1
+##
+## 3. Calc inverse of B.  Expected: Results from solve function
+## ------------------------------------------------------------
+## > matBinv <- makeCacheMatrix(matB)
+## > cacheSolve(matBinv)
+## [,1] [,2] [,3]
+## [1,]  0.2  0.2    0
+## [2,] -0.2  0.3    1
+## [3,]  0.2 -0.3    0
+##
+## 4. Calc inverse of B.  Expected: Results from cached function
+## ------------------------------------------------------------
+## > cacheSolve(matBinv)
+## getting cached data
+## [,1] [,2] [,3]
+## [1,]  0.2  0.2    0
+## [2,] -0.2  0.3    1
+## [3,]  0.2 -0.3    0
+##
+## 5. Calc inverse of A.  Expected: Results from cached function FOR A (to 
+##                                  verify function didn't confuse A and B)
+## ------------------------------------------------------------------------
+## > cacheSolve(matAinv)
+## getting cached data
+## [,1] [,2] [,3]
+## [1,]  -24   18    5
+## [2,]   20  -15   -4
+## [3,]   -5    4    1
+## >
